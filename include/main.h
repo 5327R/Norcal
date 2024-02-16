@@ -64,6 +64,7 @@
 extern "C" {
 #endif
 void autonomous(void);
+void autonTest(void);
 void initialize(void);
 void disabled(void);
 void competition_initialize(void);
