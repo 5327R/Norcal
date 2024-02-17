@@ -15,25 +15,33 @@ pros::Motor rB(2, pros::E_MOTOR_GEARSET_06); // right back motor. port 13
 pros::MotorGroup leftMotors({lF, lM, lB}); // left motor group
 pros::MotorGroup rightMotors({rF, rM, rB}); // right motor group
 
-// Inertial Sensor on port 2
-pros::Imu imu(6);
+// Inertial Sensor on port 6
+pros::Imu imu(18);
 
 pros::Motor intake = pros::Motor(20);
-pros::Motor slapper1 = pros::Motor(5);
-pros::Motor slapper2 = pros::Motor(-9);
+pros::Motor slapper1 = pros::Motor(-14);
+pros::Motor slapper2 = pros::Motor(15);
 bool slapperOn = false;
+
+pros::ADIDigitalOut horizontalFlaps = pros::ADIDigitalOut('E');
+pros::ADIDigitalOut verticalFlap = pros::ADIDigitalOut('F');
+bool horizontalFlapsOut = false;
+bool verticalFlapOut = false;
 
 // tracking wheels
 // horizontal tracking wheel encoder. Rotation sensor, port 15, reversed (negative signs don't work due to a pros bug)
-// pros::Rotation horizontalEnc(15, true);
+pros::Rotation horizontalEnc(15, false);
 
 // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot (negative)
-// lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, -3.7);
+lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, 0.5);
+
+pros::Rotation verticalEnc(13, false);
+lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_275, -0.5);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
-                              10, // 10 inch track width
+                              10.75, // 10 inch track width
                               lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
                               450, // drivetrain rpm is 360
                               2 // chase power is 2. If we had traction wheels, it would have been 8
@@ -65,9 +73,9 @@ lemlib::ControllerSettings angularController(2, // proportional gain (kP)
 
 // sensors for odometry
 // note that in this example we use internal motor encoders (IMEs), so we don't pass vertical tracking wheels
-lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
+lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            nullptr, // horizontal tracking wheel 1
+                            &horizontal, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
@@ -157,6 +165,28 @@ void opcontrol() {
             } else {
                 intake.move(-127);
             }
+        }
+
+        if (controller.get_digital_new_press(DIGITAL_L1)) {
+            if (slapperOn) {
+                slapper1.move(0);
+                slapper2.move(0);
+                slapperOn = false;
+            } else {
+                slapper1.move(100);
+                slapper2.move(100);
+                slapperOn = true;
+            }
+        }
+
+        if (controller.get_digital_new_press(DIGITAL_X)) {
+            horizontalFlaps.set_value(!horizontalFlapsOut);
+            horizontalFlapsOut = !horizontalFlapsOut;
+        }
+
+        if (controller.get_digital_new_press(DIGITAL_Y)) {
+            verticalFlap.set_value(!verticalFlapOut);
+            verticalFlapOut = !verticalFlapOut;
         }
 
         // delay to save resources
