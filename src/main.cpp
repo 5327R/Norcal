@@ -29,15 +29,15 @@ pros::ADIDigitalOut verticalFlap = pros::ADIDigitalOut('E');
 bool horizontalFlapsOut = false;
 bool verticalFlapOut = false;
 
-// tracking wheels
-// horizontal tracking wheel encoder. Rotation sensor, port 15, reversed (negative signs don't work due to a pros bug)
-pros::Rotation horizontalEnc(7, false);
+// // tracking wheels
+// // horizontal tracking wheel encoder. Rotation sensor, port 15, reversed (negative signs don't work due to a pros
+// bug) pros::Rotation horizontalEnc(7, false);
 
-// horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot (negative)
-lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, 0.5);
+// // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot (negative)
+// lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, 0.5);
 
-pros::Rotation verticalEnc(15, false);
-lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_275, -0.5);
+// pros::Rotation verticalEnc(15, false);
+// lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_275, -0.5);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
@@ -95,7 +95,6 @@ void initialize() {
     chassis.calibrate(); // calibrate sensors
     leftMotors.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
     rightMotors.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
-  
 
     // the default rate is 50. however, if you need to change the rate, you
     // can do the following.
@@ -133,17 +132,14 @@ void competition_initialize() {}
 
 // get a path used for pure pursuit
 // this needs to be put outside a function
-ASSET(example_txt); // '.' replaced with "_" to make c++ happy
+// ASSET(example_txt); // '.' replaced with "_" to make c++ happy
 
 /**
  * Runs during auto
  *
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
-void autonomous() {
-  chassis.setPose(0,0,0, false);
-  autonTest(); }
-
+void autonomous() { jerryton(); }
 
 /**
  * Runs in driver control

@@ -70,6 +70,7 @@ void initialize(void);
 void disabled(void);
 void competition_initialize(void);
 void opcontrol(void);
+void jerryton(void);
 #ifdef __cplusplus
 }
 #endif
@@ -81,7 +82,7 @@ void opcontrol(void);
 // #include <iostream>
 extern lemlib::Chassis chassis;
 extern pros::ADIDigitalOut verticalFlap;
-extern pros::Motor intake; 
+extern pros::Motor intake;
 #endif
 
 #endif // _PROS_MAIN_H_
