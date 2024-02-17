@@ -1,4 +1,6 @@
+#include "lemlib/pose.hpp"
 #include "main.h"
+#include "pros/rtos.hpp"
 
 void ProgrammingSkills() {
     chassis.moveToPoint(0, 0, 5000);
@@ -10,7 +12,46 @@ void ProgrammingSkills() {
 }
 
 void autonTest() {
-    chassis.setPose(23.967, -24.604, 0);
-    chassis.moveToPoint(23.967, -24.604, 5000);
-    chassis.moveToPose(23.649, 22.515, 180, 5000);
+    lemlib::Pose pose(8.216, -58.249, -90);
+    chassis.setPose(pose);
+    //chassis.moveToPoint(0, 0, 5000, {.forwards = false});
+    //chassis.moveToPoint(2.096, -31.817, 5000, {.forwards = false});
+    //chassis.moveToPoint(28.769, -48.202, 5000, {.forwards = false});
+    //chassis.moveToPoint(14.842, -38.786, 5000, {.forwards = false});
+    //chassis.moveToPoint(29.304, -18.265, 5000, {.forwards = false});
+    //chassis.moveToPoint(48.848, -6.734, 5000, {.forwards = false});
+    verticalFlap.set_value(true);
+    pros::delay(500);
+    verticalFlap.set_value(false);
+
+    intake.move(127);
+    pros::delay(500);
+
+    chassis.moveToPoint(45.154, -50.363, 5000, {.forwards = false});
+
+    // ram in "matchload"
+    chassis.moveToPose(63.382, -26.22, 180, 5000, {.forwards = false, .minSpeed = 110});
+    chassis.moveToPose(63.382, -20.22, 180, 5000, {.forwards = false, .minSpeed = 127});
+
+
+    //chassis.moveToPose(66.382, -22.22, 180, 5000, {.forwards = false});
+
+
+    //chassis.moveToPoint(75.617, -34.636, 1000, {.maxSpeed = 50});
+    
+    // outtake matchload to center
+    // chassis.moveToPose(22.861, -28.978, 45, 1000);
+    // intake.move(-127);
+    // pros::delay(1000);
+
+    // // grab our side neutral triball
+    // chassis.moveToPose(8.803, -25.219, 20, 1000);
+    // intake.move(127);
+    // pros::delay(500);
+
+    // // deposit it in center
+    // chassis.turnToHeading(135, 1000);
+    // intake.move(-127);
+    // pros::delay(1000);
+
 }

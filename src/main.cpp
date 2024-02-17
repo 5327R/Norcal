@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/motors.h"
 
 // controller
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
@@ -18,24 +19,24 @@ pros::MotorGroup rightMotors({rF, rM, rB}); // right motor group
 // Inertial Sensor on port 6
 pros::Imu imu(18);
 
-pros::Motor intake = pros::Motor(20);
+pros::Motor intake = pros::Motor(-10);
 pros::Motor slapper1 = pros::Motor(-14);
 pros::Motor slapper2 = pros::Motor(15);
 bool slapperOn = false;
 
-pros::ADIDigitalOut horizontalFlaps = pros::ADIDigitalOut('E');
-pros::ADIDigitalOut verticalFlap = pros::ADIDigitalOut('F');
+pros::ADIDigitalOut horizontalFlaps = pros::ADIDigitalOut('F');
+pros::ADIDigitalOut verticalFlap = pros::ADIDigitalOut('E');
 bool horizontalFlapsOut = false;
 bool verticalFlapOut = false;
 
 // tracking wheels
 // horizontal tracking wheel encoder. Rotation sensor, port 15, reversed (negative signs don't work due to a pros bug)
-pros::Rotation horizontalEnc(15, false);
+pros::Rotation horizontalEnc(7, false);
 
 // horizontal tracking wheel. 2.75" diameter, 3.7" offset, back of the robot (negative)
 lemlib::TrackingWheel horizontal(&horizontalEnc, lemlib::Omniwheel::NEW_275, 0.5);
 
-pros::Rotation verticalEnc(13, false);
+pros::Rotation verticalEnc(15, false);
 lemlib::TrackingWheel vertical(&verticalEnc, lemlib::Omniwheel::NEW_275, -0.5);
 
 // drivetrain settings
@@ -50,7 +51,7 @@ lemlib::Drivetrain drivetrain(&leftMotors, // left motor group
 // lateral motion controller
 lemlib::ControllerSettings linearController(10, // proportional gain (kP)
                                             0, // integral gain (kI)
-                                            3, // derivative gain (kD)
+                                            20, // derivative gain (kD)
                                             3, // anti windup
                                             1, // small error range, in inches
                                             100, // small error range timeout, in milliseconds
@@ -60,9 +61,9 @@ lemlib::ControllerSettings linearController(10, // proportional gain (kP)
 );
 
 // angular motion controller
-lemlib::ControllerSettings angularController(2, // proportional gain (kP)
+lemlib::ControllerSettings angularController(3, // proportional gain (kP)
                                              0, // integral gain (kI)
-                                             10, // derivative gain (kD)
+                                             22, // derivative gain (kD)
                                              3, // anti windup
                                              1, // small error range, in degrees
                                              100, // small error range timeout, in milliseconds
@@ -73,9 +74,9 @@ lemlib::ControllerSettings angularController(2, // proportional gain (kP)
 
 // sensors for odometry
 // note that in this example we use internal motor encoders (IMEs), so we don't pass vertical tracking wheels
-lemlib::OdomSensors sensors(&vertical, // vertical tracking wheel 1, set to null
+lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            &horizontal, // horizontal tracking wheel 1
+                            nullptr, // horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
@@ -92,6 +93,9 @@ lemlib::Chassis chassis(drivetrain, linearController, angularController, sensors
 void initialize() {
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
+    leftMotors.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+    rightMotors.set_brake_modes(pros::E_MOTOR_BRAKE_HOLD);
+  
 
     // the default rate is 50. however, if you need to change the rate, you
     // can do the following.
@@ -136,7 +140,10 @@ ASSET(example_txt); // '.' replaced with "_" to make c++ happy
  *
  * This is an example autonomous routine which demonstrates a lot of the features LemLib has to offer
  */
-void autonomous() { autonTest(); }
+void autonomous() {
+  chassis.setPose(0,0,0, false);
+  autonTest(); }
+
 
 /**
  * Runs in driver control
@@ -149,7 +156,7 @@ void opcontrol() {
         int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
         int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
         // move the chassis with curvature drive
-        chassis.curvature(leftY, rightX);
+        chassis.arcade(leftY, rightX);
 
         if (controller.get_digital_new_press(DIGITAL_R1)) {
             if (intake.get_target_velocity() > 0) {

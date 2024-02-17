@@ -13,6 +13,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include "pros/adi.hpp"
 #ifndef _PROS_MAIN_H_
 #define _PROS_MAIN_H_
 
@@ -79,6 +80,8 @@ void opcontrol(void);
  */
 // #include <iostream>
 extern lemlib::Chassis chassis;
+extern pros::ADIDigitalOut verticalFlap;
+extern pros::Motor intake; 
 #endif
 
 #endif // _PROS_MAIN_H_

@@ -25,7 +25,7 @@ EXCLUDE_COLD_LIBRARIES:=
 
 # Set this to 1 to add additional rules to compile your project as a PROS library template
 IS_LIBRARY:=0
-LIBNAME:=LemLib
+LIBNAME:=LemLib_R
 VERSION:=0.5.0-rc.6
 
 # EXCLUDE_SRC_FROM_LIB= $(SRCDIR)/unpublishedfile.c
